@@ -5,6 +5,24 @@ import value._
 import scala.collection.mutable.ListBuffer
 
 case class FunCall(val operator: Identifier, val operands: List[Expression]) extends Expression{
+  
+  /*
+  def execute1(env: Environment): Value = {
+    var args: List[Value] = List()
+    val passing = Flags.paramaterPassing
+    if (env.contains(operator)){
+      val maybeClosure = operator.execute(env)
+      if (maybeClosure.isInstanceOf[Closure]) {
+        val closure = maybeClosure.asInstanceOf[Closure]
+        val args = operands.map(_.execute(env))
+        closure(args, env)
+      }
+      
+    } else {
+      throw new TypeException("must be a closure")
+    }
+  }*/
+  
   def execute(env: Environment): Value = {
     
     /*
@@ -32,14 +50,59 @@ case class FunCall(val operator: Identifier, val operands: List[Expression]) ext
     
     
      // try catch method 
+    /*
     val args = operands.map(_.execute(env))
-	  try {
-		  val maybeClosure = operator.execute(env)
-			if (!maybeClosure.isInstanceOf[Closure]) throw new TypeException("needs to be a closure")
-			else maybeClosure.asInstanceOf[Closure].apply(args)
-		} catch {
-			case e: UndefinedException => alu.execute(operator, args)
-		}
-		
+    
+    val passing = Flags.paramaterPassing
+    
+    passing match {
+      case Flags.passByValue => 
+      	  try {
+      		  val maybeClosure = operator.execute(env)
+      			if (!maybeClosure.isInstanceOf[Closure]) throw new TypeException("needs to be a closure")
+      			else  maybeClosure.asInstanceOf[Closure].apply(args)
+      		} catch {
+      			case e: UndefinedException => alu.execute(operator, args)
+      		}
+      case Flags.passByName =>
+        val thunks = List[Thunk]()
+        for (i <- operands) {
+          thunks :+ new Thunk(i, env)
+        }
+      case Flags.passByText => 
+        val texts = List[Text]()
+        for (i <- operands) {
+          texts :+ new Text(i)
+        }
+    }
+    * */
+    
+    
+    var args: List[Value] = List()
+    val passing = Flags.paramaterPassing
+      
+    passing match {
+      case Flags.passByValue =>  {
+        println("passByValue")
+        args = operands.map(_.execute(env))
+      }
+      case Flags.passByName => {
+        println("passByName")
+        args = operands.map((list: Expression) => new Thunk(list, env))
+      }
+      case Flags.passByText => {
+        println("passByText")
+        args = operands.map((list: Expression) => new Text(list))
+      }
+    }
+    
+    try {
+      println("try")
+      val maybeClosure = operator.execute(env)
+      if (!maybeClosure.isInstanceOf[Closure]) throw new TypeException
+      else maybeClosure.asInstanceOf[Closure].apply(args)
+    } catch {  //4th option. alu 
+      case e: UndefinedException => alu.execute(operator, args)
+    }
   }
 }
