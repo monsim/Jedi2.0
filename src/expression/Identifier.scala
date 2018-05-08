@@ -14,7 +14,7 @@ case class Identifier(val name: String) extends Expression {
       * thunk/text then you have to thaw it
       */
      val result = env(this)
-     /*
+     
      result match {
        case v: Thunk => v.apply(List(result))
        case v: Text => {
@@ -23,7 +23,9 @@ case class Identifier(val name: String) extends Expression {
        }
        case _ => result   //any other type of value
      }
-     */
+     
+     
+     /*
      println("rrr: " + result.getClass()) 
      if (result.isInstanceOf[Thunk]){
        result.asInstanceOf[Thunk].apply(List(result))
@@ -34,6 +36,8 @@ case class Identifier(val name: String) extends Expression {
        println("else")
        result
      }
+     * 
+     */
    }
 }
 

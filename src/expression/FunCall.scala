@@ -24,6 +24,9 @@ case class FunCall(val operator: Identifier, val operands: List[Expression]) ext
   }*/
   
   def execute(env: Environment): Value = {
+    var env1 = env
+    if (!Flags.useStaticScopeRule) 
+    	  env1 = new Environment()  //defining environment
     
     /*
      * jedi 1.0
@@ -83,19 +86,20 @@ case class FunCall(val operator: Identifier, val operands: List[Expression]) ext
       
     passing match {
       case Flags.passByValue =>  {
-        println("passByValue")
-        args = operands.map(_.execute(env))
+      //  println("passByValue")
+        args = operands.map(_.execute(env1))
       }
       case Flags.passByName => {
-        println("passByName")
-        args = operands.map((list: Expression) => new Thunk(list, env))
+      //  println("passByName")
+        args = operands.map((list: Expression) => new Thunk(list, env1))
       }
       case Flags.passByText => {
-        println("passByText")
+      //  println("passByText")
         args = operands.map((list: Expression) => new Text(list))
       }
     }
     
+    /*
     try {
       println("try")
       val maybeClosure = operator.execute(env)
@@ -103,6 +107,22 @@ case class FunCall(val operator: Identifier, val operands: List[Expression]) ext
       else maybeClosure.asInstanceOf[Closure].apply(args)
     } catch {  //4th option. alu 
       case e: UndefinedException => alu.execute(operator, args)
-    }
+		}
+    */
+    
+    	if (env1.contains(operator)) {
+    		val maybeClosure = operator.execute(env1)
+    		if (maybeClosure.isInstanceOf[Closure]) {
+    			val closure = maybeClosure.asInstanceOf[Closure]
+    			//val args = operands.map(_.execute(env))
+    			closure.apply(args, env1)
+    		}
+    		else {
+    			throw new TypeException("only functions can be called")
+    		}
+    	} 	else {
+    			val args = operands.map(_.execute(env1))
+    			alu.execute(operator, args)
+    	}
   }
 }
