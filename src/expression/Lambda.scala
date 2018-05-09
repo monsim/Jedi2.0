@@ -17,6 +17,5 @@ case class Lambda(val param: List[Identifier], body: Expression) extends Special
    */
   def execute(env: Environment): Value = {
     new Closure(param, body, env)
-    //Notification.OK
   }
 }

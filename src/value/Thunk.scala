@@ -6,6 +6,6 @@ class Thunk(body: Expression, defEnv: Environment) extends Closure(Nil, body, de
   //executes body in a new "empty" environment
    def apply(args: List[Value]) = {
     val tempEnv = new Environment(defEnv)
-    body.execute(tempEnv)
+    body.execute(tempEnv)   
    }
 }

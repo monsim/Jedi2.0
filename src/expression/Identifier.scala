@@ -23,21 +23,6 @@ case class Identifier(val name: String) extends Expression {
        }
        case _ => result   //any other type of value
      }
-     
-     
-     /*
-     println("rrr: " + result.getClass()) 
-     if (result.isInstanceOf[Thunk]){
-       result.asInstanceOf[Thunk].apply(List(result))
-     } else if (result.isInstanceOf[Text]) {
-       println("result.body: " + result.asInstanceOf[Text].body)
-       result.asInstanceOf[Text].body.execute(env)
-     } else {
-       println("else")
-       result
-     }
-     * 
-     */
    }
 }
 
